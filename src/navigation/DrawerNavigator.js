@@ -26,6 +26,8 @@ import Rota from "../screens/Rota";
 import UpdatedLogsStack from "./UpdatedLogsStack";
 import DailyLogsStack from "./DailyLogsStack";
 
+const color_main = "#6301ed" //f4511e
+
 const Drawer = createDrawerNavigator();
 export default function App({ navigation }) {
   const [date, setDate] = useState(new Date());
@@ -80,7 +82,7 @@ export default function App({ navigation }) {
           component={DailyLogsStack}
           options={{
             headerStyle: {
-              backgroundColor: "#f4511e",
+              backgroundColor: color_main,
             },
             headerTintColor: "#fff",
             headerTitleStyle: {
@@ -97,7 +99,7 @@ export default function App({ navigation }) {
                   onValueChange={toggleSwitch}
                   value={enabled}
                   thumbColor={enabled ? "white" : "white"}
-                  trackColor={{ false: trackColorOff, true: "green" }}
+                  trackColor={{ false: "grey", true: "green" }}
                   ios_backgroundColor={trackColorOff}
                 />
               </View>
@@ -109,7 +111,7 @@ export default function App({ navigation }) {
           component={UpdatedLogsStack}
           options={{
             headerStyle: {
-              backgroundColor: "#f4511e",
+              backgroundColor: color_main,
             },
             headerTintColor: "#fff",
             headerTitleStyle: {
@@ -138,7 +140,7 @@ export default function App({ navigation }) {
           component={Messages}
           options={{
             headerStyle: {
-              backgroundColor: "#f4511e",
+              backgroundColor: color_main,
             },
             headerTintColor: "#fff",
             headerTitleStyle: {
@@ -167,7 +169,7 @@ export default function App({ navigation }) {
           component={Rota}
           options={{
             headerStyle: {
-              backgroundColor: "#f4511e",
+              backgroundColor: color_main,
             },
             headerTintColor: "#fff",
             headerTitleStyle: {

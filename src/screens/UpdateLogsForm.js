@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,19 +8,42 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Modal,
+  Pressable,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import { LinearGradient } from "expo-linear-gradient";
-
+import { Camera } from "expo-camera";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import CameraModule from "./CameraModule";
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
+const CAPTURE_SIZE = Math.floor(windowHeight * 0.08);
 
 const UpdateLogsForm = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+
   const _pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({});
     alert(result.uri);
     console.log(result);
   };
+  const [image, setImage] = useState(null);
+  const [camera, setShowCamera] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestPermissionsAsync();
+      setHasPermission(status === "granted");
+    })();
+  }, []);
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.stage}>
       <View style={styles.box}>
@@ -77,7 +100,7 @@ const UpdateLogsForm = () => {
         </View>
         <TouchableOpacity
           style={styles.buttonDivFormOther}
-          onPress={() => _pickDocument()}
+          onPress={() => setModalVisible(true)}
         >
           <Text style={styles.buttonForm}>Image</Text>
         </TouchableOpacity>
@@ -92,17 +115,80 @@ const UpdateLogsForm = () => {
           <Text style={styles.button}>Upload</Text>
         </TouchableOpacity>
       </LinearGradient>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Button
+              onPress={() => {
+                _pickDocument();
+              }}
+              title="Chosse From Gallery"
+            />
+
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginVertical: 20,
+              }}
+            >
+              {/* <View
+                style={{
+                  backgroundColor: "#eeee",
+                  width: 120,
+                  height: 120,
+                  borderRadius: 100,
+                  marginBottom: 8,
+                }}
+              ></View> */}
+              <Button
+                style={{ width: "30%", marginTop: 0 }}
+                icon="camera"
+                mode="contained"
+                onPress={() => {
+                  setShowCamera(true);
+                }}
+                title="Upload from a Camera"
+              />
+
+              {camera && (
+                <CameraModule
+                  showModal={camera}
+                  setModalVisible={() => setShowCamera(false)}
+                  setImage={(result) => setImage(result.uri)}
+                />
+              )}
+            </View>
+
+            <Pressable
+              style={[styles.buttonCancel, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={{ color: "white" }}>Cancel</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-    stage: {
-        backgroundColor: "#EFEFF4",
-        paddingTop: 20,
-        paddingBottom: 20,
-        alignItems:"center",
-      },
+  stage: {
+    backgroundColor: "#EFEFF4",
+    paddingTop: 20,
+    paddingBottom: 20,
+    alignItems: "center",
+  },
   box: {
     display: "flex",
     flexDirection: "row",
@@ -146,6 +232,40 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     color: "white",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 9,
+  },
+  buttonCancel: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+    marginRight: 15,
+    // alignSelf:"flex-start"
   },
 });
 export default UpdateLogsForm;
