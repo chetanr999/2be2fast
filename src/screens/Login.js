@@ -6,6 +6,7 @@ import {
   TextInput,
   Button,
   TouchableOpacity,
+  Alert,
   Dimensions,
 } from "react-native";
 import { AsyncStorage } from "react-native";
@@ -20,13 +21,19 @@ const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 const Login = ({ navigation: { navigate } }) => {
-  const [name, setname] = useState("Vaibhav");
-  const [age, setage] = useState("21");
+  const [email, setemail] = useState("");
+  const [password, setpassword] = useState("");
 
-  const {signIn} = React.useContext(AuthContext)
+  const { signIn } = React.useContext(AuthContext);
 
-  const handleSubmit = () => {
-     signIn()
+  const handleLogin = (email, password) => {
+    if (email === "" || password === "") {
+      Alert.alert('Error:', 'Please Fill all the fields', [
+
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
+    }
+    signIn(email, password);
   };
   return (
     <View style={styles.containerTop}>
@@ -42,12 +49,12 @@ const Login = ({ navigation: { navigate } }) => {
         <TextInput
           style={styles.textinput}
           placeholder="Email"
-          onChangeText={(value) => setname(value)}
+          onChangeText={(value) => setemail(value)}
         />
         <TextInput
           style={styles.textinput}
           placeholder="Password"
-          onChangeText={(value) => setname(value)}
+          onChangeText={(value) => setpassword(value)}
         />
 
         <View style={styles.containerForget}>
@@ -69,7 +76,11 @@ const Login = ({ navigation: { navigate } }) => {
           end={{ x: 1, y: 1 }}
           style={styles.buttonDiv}
         >
-          <TouchableOpacity onPress={()=>{signIn()}}>
+          <TouchableOpacity
+            onPress={() => {
+              handleLogin(email, password);
+            }}
+          >
             <Text style={styles.button}> LOGIN</Text>
           </TouchableOpacity>
         </LinearGradient>
