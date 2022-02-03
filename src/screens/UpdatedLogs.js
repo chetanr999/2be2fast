@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Image
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -18,87 +19,120 @@ const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 const UpdatedLogs = ({ navigation: { navigate } }) => {
-  const [state, setstate] = useState([
-    {
-      no: "1",
-      image: "Image",
-      routes: "3084578",
-      collection: "5",
-      missingParcel: "4",
-      parcelDelevered: "4",
-      carryForward: "4",
-      amount: "456",
-      invoiceStatus: "pending",
-      date: "21-5-12",
-    },
-    {
-      no: "2",
-      image: "Image",
-      routes: "3084578",
-      collection: "5",
-      missingParcel: "4",
-      parcelDelevered: "4",
-      carryForward: "4",
-      amount: "456",
-      invoiceStatus: "pending",
-      date: "21-5-12",
-    },
-    {
-      no: "3",
-      image: "Image",
-      routes: "3084578",
-      collection: "5",
-      missingParcel: "4",
-      parcelDelevered: "4",
-      carryForward: "4",
-      amount: "456",
-      invoiceStatus: "pending",
-      date: "21-5-12",
-    },
-    {
-      no: "4",
-      image: "Image",
-      routes: "3084578",
-      collection: "5",
-      missingParcel: "4",
-      parcelDelevered: "4",
-      carryForward: "4",
-      amount: "456",
-      invoiceStatus: "pending",
-      date: "21-5-12",
-    },
-    {
-      no: "5",
-      image: "Image",
-      routes: "3084578",
-      collection: "5",
-      missingParcel: "4",
-      parcelDelevered: "4",
-      carryForward: "4",
-      amount: "456",
-      invoiceStatus: "pending",
-      date: "21-5-12",
-    },
-    {
-      no: "6",
-      image: "Image",
-      routes: "3084578",
-      collection: "5",
-      missingParcel: "4",
-      parcelDelevered: "4",
-      carryForward: "4",
-      amount: "456",
-      invoiceStatus: "pending",
-      date: "21-5-12",
-    },
-  ]);
+  // const [state, setstate] = useState([
+  //   {
+  //     no: "1",
+  //     image: "Image",
+  //     routes: "3084578",
+  //     collection: "5",
+  //     missingParcel: "4",
+  //     parcelDelevered: "4",
+  //     carryForward: "4",
+  //     amount: "456",
+  //     invoiceStatus: "pending",
+  //     date: "21-5-12",
+  //   },
+  //   {
+  //     no: "2",
+  //     image: "Image",
+  //     routes: "3084578",
+  //     collection: "5",
+  //     missingParcel: "4",
+  //     parcelDelevered: "4",
+  //     carryForward: "4",
+  //     amount: "456",
+  //     invoiceStatus: "pending",
+  //     date: "21-5-12",
+  //   },
+  //   {
+  //     no: "3",
+  //     image: "Image",
+  //     routes: "3084578",
+  //     collection: "5",
+  //     missingParcel: "4",
+  //     parcelDelevered: "4",
+  //     carryForward: "4",
+  //     amount: "456",
+  //     invoiceStatus: "pending",
+  //     date: "21-5-12",
+  //   },
+  //   {
+  //     no: "4",
+  //     image: "Image",
+  //     routes: "3084578",
+  //     collection: "5",
+  //     missingParcel: "4",
+  //     parcelDelevered: "4",
+  //     carryForward: "4",
+  //     amount: "456",
+  //     invoiceStatus: "pending",
+  //     date: "21-5-12",
+  //   },
+  //   {
+  //     no: "5",
+  //     image: "Image",
+  //     routes: "3084578",
+  //     collection: "5",
+  //     missingParcel: "4",
+  //     parcelDelevered: "4",
+  //     carryForward: "4",
+  //     amount: "456",
+  //     invoiceStatus: "pending",
+  //     date: "21-5-12",
+  //   },
+  //   {
+  //     no: "6",
+  //     image: "Image",
+  //     routes: "3084578",
+  //     collection: "5",
+  //     missingParcel: "4",
+  //     parcelDelevered: "4",
+  //     carryForward: "4",
+  //     amount: "456",
+  //     invoiceStatus: "pending",
+  //     date: "21-5-12",
+  //   },
+  // ]);
+  const [state,setstate]=React.useState(null);
+
+  React.useEffect(()=>{
+    (async()=>{
+      try{
+        let bodyContent = new FormData();
+        bodyContent.append("driver_id", 1);
+        const response = await fetch("https://2be2fast.com/soft/fetch_driver_logs", {
+          method: "POST",
+          body: bodyContent,
+          headers: {},
+        });
+        const temp=await response.json();
+        setstate(temp.data);
+      }
+      catch(e){
+        console.log(e)
+      }
+    })()
+  },[state]);
+  
+
   return (
     <ScrollView contentContainerStyle={styles.stage}>
       <TableView appearance="light">
-        {state.map((data) => (
+        {state?state.map((data,i) => (
           <Section>
-            <Cell cellStyle="RightDetail" title="No." detail={data.no} />
-            <Cell cellStyle="RightDetail" title="Image" detail={data.image} />
+            <Cell cellStyle="RightDetail" title="No." detail={i+1} />
+            {/* <Cell cellStyle="RightDetail" title="Image" detail={data.image} /> */}
+            <Cell
+              cellStyle="Basic"
+              title="Image"
+              cellAccessoryView={
+                <View style={{}}>
+                  <Image source={{uri: 'https://2be2fast.com/soft/'+data.image}}
+                    style={{width:40, height:40}} />
+                </View>
+              }
+              contentContainerStyle={{ paddingVertical: 4 }}
+            />
             <Cell cellStyle="RightDetail" title="Routes" detail={data.routes} />
             <Cell
               cellStyle="RightDetail"
@@ -108,20 +142,20 @@ const UpdatedLogs = ({ navigation: { navigate } }) => {
             <Cell
               cellStyle="RightDetail"
               title="Missing Parcel"
-              detail={data.missingParcel}
+              detail={data.missing_parcels}
             />
             <Cell
               cellStyle="RightDetail"
               title="CarryForword"
-              detail={data.carryForward}
+              detail={data.carry_forward}
             />
-            <Cell cellStyle="RightDetail" title="Amount" detail={data.amount} />
+            <Cell cellStyle="RightDetail" title="Amount" detail={data.total_amount} />
             <Cell
               cellStyle="Basic"
               title="Invoice Status"
               cellAccessoryView={
                 <View style={styles.pendingBox}>
-                  <Text style={styles.invoiceStatus_text}>{data.invoiceStatus}</Text>
+                  <Text style={styles.invoiceStatus_text}>{data.invoice_status}</Text>
                 </View>
               }
               contentContainerStyle={{ paddingVertical: 4 }}
@@ -131,7 +165,7 @@ const UpdatedLogs = ({ navigation: { navigate } }) => {
               cellStyle="Basic"
               title="Actions"
               cellAccessoryView={
-                <TouchableOpacity  onPress={()=> navigate("UpdateLogsForm")}>
+                <TouchableOpacity  onPress={()=> navigate("UpdateLogsForm",data)}>
 
                 <View style={styles.editBox}>
                   <AntDesign
@@ -146,7 +180,7 @@ const UpdatedLogs = ({ navigation: { navigate } }) => {
               contentContainerStyle={{ paddingVertical: 4 }}
             />
           </Section>
-        ))}
+        )):null}
       </TableView>
     </ScrollView>
   );

@@ -8,68 +8,116 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Alert,
+  ToastAndroid
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Cell, Section, TableView } from "react-native-tableview-simple";
 import Signup from "./Signup";
+import { useFocusEffect } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 const Rota = () => {
-  const [state, setstate] = useState([
-    {
-      no: "1",
-      date: "5-12-2018",
-      description: "Admin",
-      Status: "Dis-approve",
-      Action: "Delete",
-    },
-    {
-      no: "1",
-      date: "5-12-2018",
-      description: "Admin",
-      Status: "Approved",
-      Action: "Delete",
-    },
-    {
-      no: "1",
-      date: "5-12-2018",
-      description: "Admin",
-      Status: "Dis-approve",
-      Action: "Delete",
-    },
-    {
-      no: "1",
-      date: "5-12-2018",
-      description: "Admin",
-      Status: "Approved",
-      Action: "Delete",
-    },
-    {
-      no: "1",
-      date: "5-12-2018",
-      description: "Admin",
-      Status: "Dis-approve",
-      Action: "Delete",
-    },
-    {
-      no: "1",
-      date: "5-12-2018",
-      description: "Admin",
-      Status: "Dis-approve",
-      Action: "Delete",
-    },
-  ]);
+  // const [state, setstate] = useState([
+  //   {
+  //     no: "1",
+  //     date: "5-12-2018",
+  //     description: "Admin",
+  //     Status: "Dis-approve",
+  //     Action: "Delete",
+  //   },
+  //   {
+  //     no: "1",
+  //     date: "5-12-2018",
+  //     description: "Admin",
+  //     Status: "Approved",
+  //     Action: "Delete",
+  //   },
+  //   {
+  //     no: "1",
+  //     date: "5-12-2018",
+  //     description: "Admin",
+  //     Status: "Dis-approve",
+  //     Action: "Delete",
+  //   },
+  //   {
+  //     no: "1",
+  //     date: "5-12-2018",
+  //     description: "Admin",
+  //     Status: "Approved",
+  //     Action: "Delete",
+  //   },
+  //   {
+  //     no: "1",
+  //     date: "5-12-2018",
+  //     description: "Admin",
+  //     Status: "Dis-approve",
+  //     Action: "Delete",
+  //   },
+  //   {
+  //     no: "1",
+  //     date: "5-12-2018",
+  //     description: "Admin",
+  //     Status: "Dis-approve",
+  //     Action: "Delete",
+  //   },
+  // ]);
+  const [state,setstate]=React.useState(null);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      (async()=>{
+        try{
+          let bodyContent = new FormData();
+          bodyContent.append("driver_id", 1);
+          const response = await fetch("https://2be2fast.com/soft/fetch_leaves_data", {
+            method: "POST",
+            body: bodyContent,
+            headers: {},
+          });
+          const temp=await response.json();
+          setstate(temp.data)
+        }
+        catch(e){
+          console.log(e)
+        }
+      })()
+    }, [state])
+  );
+
+  const deleterota=async(id)=>{
+    ToastAndroid.show("Deleting...",ToastAndroid.SHORT);
+    try{
+      console.log("id:",id)
+      let bodyContent = new FormData();
+      bodyContent.append("id", id);
+      const response = await fetch("https://2be2fast.com/soft/delete_leave", {
+        method: "POST",
+        body: bodyContent,
+        headers: {},
+      });
+      const temp=await response.json();
+      console.log(temp)
+      ToastAndroid.show("Successfully Deleted",ToastAndroid.SHORT);
+
+    }
+    catch(e){
+      ToastAndroid.show("Error while deleting",ToastAndroid.SHORT);
+      console.log(e)
+    }
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.stage}>
       <TableView appearance="light">
-        {state.map((data) => {
+        {state?state.map((data,i) => {
           return (
             <Section>
-              <Cell cellStyle="RightDetail" title="No." detail={data.no} />
+              <Cell cellStyle="RightDetail" title="No." detail={i+1} />
               <Cell cellStyle="RightDetail" title="Date" detail={data.date} />
 
               <Cell
@@ -90,7 +138,7 @@ const Rota = () => {
                   ) : (
                     <View style={styles.disaaproveBox}>
                       <Text style={styles.disaaproveBox_text}>
-                        {data.Status}
+                        {data.status}
                       </Text>
                     </View>
                   )
@@ -106,6 +154,18 @@ const Rota = () => {
                       name="delete"
                       size={20}
                       color="#dc3545"
+                      onPress={()=> Alert.alert(
+                        "Confirmation",
+                        "Are you sure to delete this",
+                        [
+                          {
+                            text: "Cancel",
+                            onPress: () => console.log("Cancel Pressed"),
+                            style: "cancel"
+                          },
+                          { text: "Confirm", onPress: () => deleterota(data.id) }
+                        ]
+                      )}
                       style={{ textAlign: "center" }}
                     />
                   </View>
@@ -114,7 +174,7 @@ const Rota = () => {
               />
             </Section>
           );
-        })}
+        }):null}
       </TableView>
     </ScrollView>
   );

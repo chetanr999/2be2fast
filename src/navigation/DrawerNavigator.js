@@ -10,6 +10,7 @@ import {
   TextInput,
   Modal,
   Switch,
+  ToastAndroid,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -55,10 +56,36 @@ export default function App({ navigation }) {
   };
 
   const [enabled, setEnabled] = useState(false);
+  const [description,setdescription]=React.useState("");
 
   const toggleSwitch = () => {
     setEnabled((oldValue) => !oldValue);
   };
+
+  const applyrota=async()=>{
+    if(description.length==0){
+      Alert.alert("Oops","Please enter description...");
+      return;
+    }
+    setModalVisible(!modalVisible);
+    
+    try{
+      let bodyContent = new FormData();
+      bodyContent.append("date",date.toString());
+      bodyContent.append("desc", description);
+      bodyContent.append("driver_id", 1);
+      const response = await fetch("https://2be2fast.com/soft/aplly_Leaves", {
+        method: "POST",
+        body: bodyContent,
+        headers: {},
+      });
+      console.log(await response.json());
+    }
+    catch(e){
+      console.log(e)
+    }
+    ToastAndroid.show("Application Submitted",ToastAndroid.SHORT);
+  }
 
   const thumbColorOn = Platform.OS === "android" ? "#0cd1e8" : "#f3f3f3";
   const thumbColorOff = Platform.OS === "android" ? "#f04141" : "#f3f3f3";
@@ -231,6 +258,7 @@ export default function App({ navigation }) {
               </View>
               <View style={styles.form_textInput_div}>
                 <TextInput
+                onChangeText={setdescription}
                   multiline={true}
                   style={styles.textinput}
                   placeholder="Enter Description"
@@ -246,7 +274,7 @@ export default function App({ navigation }) {
               </Pressable>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
+                onPress={() => applyrota()}
               >
                 <Text style={styles.textStyle}>Submit</Text>
               </Pressable>
