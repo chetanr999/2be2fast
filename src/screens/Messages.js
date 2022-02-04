@@ -10,11 +10,15 @@ import {
   TextInput,
   FlatList,
   Button,
-  Dimensions
+  Dimensions,Modal,Pressable,
+  ToastAndroid
 } from "react-native";
+import CameraModule from "./CameraModule";
 import { FontAwesome } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Signup from "./Signup";
+import { Camera } from "expo-camera";
+import * as DocumentPicker from "expo-document-picker";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -36,6 +40,16 @@ const Messages = () => {
 
   const [messages,setmessages]=React.useState(null);
   const [msg,setmsg]=useState("");
+  const [modalVisible,setModalVisible]=useState(false);
+  const [image,setimage]=useState(null);
+
+  const _pickDocument = async () => {
+    let result = await DocumentPicker.getDocumentAsync({});
+    setimage(result.uri);
+    console.log(result);
+  };
+  const [camera, setShowCamera] = useState(false);
+
   React.useEffect(()=>{
     (async()=>{
       try{
@@ -47,8 +61,8 @@ const Messages = () => {
           headers: {},
         });
         const temp=await response.json();
-
         setmessages(temp.data)
+
       }
       catch(e){
         console.log(e)
@@ -68,13 +82,21 @@ const Messages = () => {
     if(!msg.length){
       return;
     }
-    console.log(msg);
+    console.log(image);
     
     try{
+      ToastAndroid.show("Sending",ToastAndroid.SHORT);
 
       let bodyContent = new FormData();
       bodyContent.append("driver_id", 1);
       bodyContent.append("msg",msg);
+      if(image){
+        bodyContent.append("img",{
+          uri:image,
+          type:"image/jpg",
+          name:"image.jpg"
+        });
+      }
       setmsg("");
       const response = await fetch("https://2be2fast.com/soft/post_chat", {
         method: "POST",
@@ -82,6 +104,7 @@ const Messages = () => {
         headers: {},
       });
       const temp=await response.json();
+    ToastAndroid.show("Sent.",ToastAndroid.SHORT);
       
       console.log(temp)
     }
@@ -89,6 +112,7 @@ const Messages = () => {
       console.log(e);
     }
   }
+
     return (
       <View style={styles.container}>
       {messages?<FlatList style={styles.list}
@@ -105,6 +129,8 @@ const Messages = () => {
             <View style={[styles.item, itemStyle]}>
               {!inMessage && renderDate(item.date)}
               <View style={[styles.balloon]}>
+              {item.file?<Image source={{uri: 'https://2be2fast.com/soft/'+item.file}}
+                style={{width: 80, height:50}} />:null}
                 <Text>{item.message}</Text>
               </View>
               {renderDate(item.created_on)}
@@ -112,6 +138,9 @@ const Messages = () => {
           )
         }}/>:null}
       <View style={styles.footer}>
+        <TouchableOpacity style={[styles.btnSend,{marginRight:10}]} onPress={()=>setModalVisible(true)}>
+            <Image source={{uri:"https://img.icons8.com/android/50/000000/plus.png"}} style={styles.iconSend}  />
+        </TouchableOpacity>
         <View style={styles.inputContainer}>
           <TextInput style={styles.inputs}
               placeholder="Write a message..."
@@ -125,6 +154,71 @@ const Messages = () => {
             <Image source={{uri:"https://img.icons8.com/small/75/ffffff/filled-sent.png"}} style={styles.iconSend}  />
           </TouchableOpacity>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Button
+              onPress={() => {
+                _pickDocument();
+              }}
+              title="Chosse From Gallery"
+            />
+
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginVertical: 20,
+              }}
+            >
+              {/* <View
+                style={{
+                  backgroundColor: "#eeee",
+                  width: 120,
+                  height: 120,
+                  borderRadius: 100,
+                  marginBottom: 8,
+                }}
+              ></View> */}
+              <Button
+                style={{ width: "30%", marginTop: 0 }}
+                icon="camera"
+                mode="contained"
+                onPress={async() => {
+                  Camera.requestPermissionsAsync().then((status)=>{
+                    if(status.granted)
+                    setShowCamera(true);
+                  })
+                  
+                }}
+                title="Upload from a Camera"
+              />
+
+              {camera && (
+                <CameraModule
+                  showModal={camera}
+                  setModalVisible={() => setShowCamera(false)}
+                  setImage={(result) => {setModalVisible(false);setimage(result.uri)}}
+                />
+              )}
+            </View>
+
+            <Pressable
+              style={[styles.buttonCancel, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={{ color: "white" }}>Cancel</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
     );
   };
@@ -145,7 +239,7 @@ const Messages = () => {
       padding:5,
     },
     btnSend:{
-      backgroundColor:"#00BFFF",
+      backgroundColor:"#6301ed",
       width:40,
       height:40,
       borderRadius:360,
@@ -192,7 +286,7 @@ const Messages = () => {
       elevation: 8,
     },
     itemOut: {
-      alignSelf: 'flex-end',
+      alignSelf: 'flex-start',
       shadowColor: "#000",
       shadowOffset: {
         width: 0,
@@ -215,6 +309,40 @@ const Messages = () => {
       backgroundColor:"#eeeeee",
       borderRadius:300,
       padding:5,
+    },
+    centeredView: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: 22,
+    },
+    modalView: {
+      margin: 20,
+      backgroundColor: "white",
+      borderRadius: 20,
+      padding: 35,
+      alignItems: "center",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 9,
+    },
+    buttonCancel: {
+      borderRadius: 20,
+      padding: 10,
+      elevation: 2,
+    },
+    buttonOpen: {
+      backgroundColor: "#F194FF",
+    },
+    buttonClose: {
+      backgroundColor: "#2196F3",
+      marginRight: 15,
+      // alignSelf:"flex-start"
     },
   }); 
 

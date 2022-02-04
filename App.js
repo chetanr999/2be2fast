@@ -4,7 +4,7 @@ import "react-native-gesture-handler";
 // import { AsyncStorage } from "react-native";
 import DrawerNavigator from "./src/navigation/DrawerNavigator";
 import StackNavigator from "./src/navigation/StackNavigator";
-import { View, ActivityIndicator, Alert } from "react-native";
+import { View, ActivityIndicator, Alert,ToastAndroid } from "react-native";
 import { AuthContext } from "./src/components/context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -57,6 +57,8 @@ export default function App() {
 
   const authContext = React.useMemo(() => ({
     signIn: async (userName, password) => {
+    ToastAndroid.show("Loading...",ToastAndroid.SHORT);
+
       let userToken;
       userToken = null;
       try {
@@ -75,6 +77,7 @@ export default function App() {
           try {
             userToken = data.data.Email;
             await AsyncStorage.setItem("userToken", userToken);
+            ToastAndroid.show("Successfully Logged in",ToastAndroid.SHORT);
 
             dispatch({ type: "LOGIN", id: userName, token: userToken });
           } catch (error) {

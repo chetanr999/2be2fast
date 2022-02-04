@@ -68,6 +68,7 @@ export default function App({ navigation }) {
       return;
     }
     setModalVisible(!modalVisible);
+    ToastAndroid.show("Loading...",ToastAndroid.SHORT);
     
     try{
       let bodyContent = new FormData();
@@ -82,6 +83,8 @@ export default function App({ navigation }) {
       console.log(await response.json());
     }
     catch(e){
+    ToastAndroid.show("Error Try again later.",ToastAndroid.SHORT);
+
       console.log(e)
     }
     ToastAndroid.show("Application Submitted",ToastAndroid.SHORT);
