@@ -125,13 +125,7 @@ export default function App({ navigation }) {
                     <Text style={styles.button_text}>ROTA</Text>
                   </View>
                 </Pressable>
-                <Switch
-                  onValueChange={toggleSwitch}
-                  value={enabled}
-                  thumbColor={enabled ? "white" : "white"}
-                  trackColor={{ false: "grey", true: "green" }}
-                  ios_backgroundColor={trackColorOff}
-                />
+                
               </View>
             ),
           }}
@@ -154,13 +148,7 @@ export default function App({ navigation }) {
                     <Text style={styles.button_text}>ROTA</Text>
                   </View>
                 </Pressable>
-                <Switch
-                  onValueChange={toggleSwitch}
-                  value={enabled}
-                  thumbColor={enabled ? "white" : "white"}
-                  trackColor={{ false: trackColorOff, true: "green" }}
-                  ios_backgroundColor={trackColorOff}
-                />
+              
               </View>
             ),
           }}
@@ -183,13 +171,7 @@ export default function App({ navigation }) {
                     <Text style={styles.button_text}>ROTA</Text>
                   </View>
                 </Pressable>
-                <Switch
-                  onValueChange={toggleSwitch}
-                  value={enabled}
-                  thumbColor={enabled ? "white" : "white"}
-                  trackColor={{ false: trackColorOff, true: "green" }}
-                  ios_backgroundColor={trackColorOff}
-                />
+              
               </View>
             ),
           }}
@@ -212,13 +194,7 @@ export default function App({ navigation }) {
                     <Text style={styles.button_text}>ROTA</Text>
                   </View>
                 </Pressable>
-                <Switch
-                  onValueChange={toggleSwitch}
-                  value={enabled}
-                  thumbColor={enabled ? "white" : "white"}
-                  trackColor={{ false: trackColorOff, true: "green" }}
-                  ios_backgroundColor={trackColorOff}
-                />
+              
               </View>
             ),
           }}

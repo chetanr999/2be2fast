@@ -8,13 +8,16 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  Image
+  Image,
+  Alert
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Signup from "./Signup";
 import { Cell, Section, TableView } from "react-native-tableview-simple";
 import { AntDesign } from "@expo/vector-icons";
+import * as FileSystem from 'expo-file-system';
+
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
@@ -93,11 +96,26 @@ const UpdatedLogs = ({ navigation: { navigate } }) => {
   //     date: "21-5-12",
   //   },
   // ]);
-  const [state,setstate]=React.useState(null);
+  const [state, setstate] = React.useState(null);
 
-  React.useEffect(()=>{
-    (async()=>{
-      try{
+  const handleFileDownload = async(uri, filename) => {
+try {
+  
+  var fileUri = "" + FileSystem.documentDirectory + filename;
+  var downloadedFile = await FileSystem.downloadAsync(uri, fileUri);
+  if (downloadedFile.status != 200) {
+    Alert.alert("Error Occured!! Try again later");
+  }
+} catch (error) {
+  Alert.alert("Error Occured!! Try again later");
+  
+}
+   
+  }
+
+  React.useEffect(() => {
+    (async () => {
+      try {
         let bodyContent = new FormData();
         bodyContent.append("driver_id", 1);
         const response = await fetch("https://2be2fast.com/soft/fetch_driver_logs", {
@@ -105,30 +123,30 @@ const UpdatedLogs = ({ navigation: { navigate } }) => {
           body: bodyContent,
           headers: {},
         });
-        const temp=await response.json();
+        const temp = await response.json();
         setstate(temp.data);
       }
-      catch(e){
+      catch (e) {
         console.log(e)
       }
     })()
-  },[state]);
-  
+  }, [state]);
+
 
   return (
     <ScrollView contentContainerStyle={styles.stage}>
       <TableView appearance="light">
-        {state?state.map((data,i) => (
+        {state ? state.map((data, i) => (
           <Section>
-            <Cell cellStyle="RightDetail" title="No." detail={i+1} />
+            <Cell cellStyle="RightDetail" title="No." detail={i + 1} />
             {/* <Cell cellStyle="RightDetail" title="Image" detail={data.image} /> */}
             <Cell
               cellStyle="Basic"
               title="Image"
               cellAccessoryView={
                 <View style={{}}>
-                  <Image source={{uri: 'https://2be2fast.com/soft/'+data.image}}
-                    style={{width:40, height:40}} />
+                  <Image source={{ uri: 'https://2be2fast.com/soft/' + data.image }}
+                    style={{ width: 40, height: 40 }} />
                 </View>
               }
               contentContainerStyle={{ paddingVertical: 4 }}
@@ -154,33 +172,55 @@ const UpdatedLogs = ({ navigation: { navigate } }) => {
               cellStyle="Basic"
               title="Invoice Status"
               cellAccessoryView={
-                <View style={styles.pendingBox}>
-                  <Text style={styles.invoiceStatus_text}>{data.invoice_status}</Text>
+                <View style={data.invoice_status == "2" ? styles.pendingBox : styles.pendingBoxGreen}>
+                  <Text style={styles.invoiceStatus_text}>{data.invoice_status == "1" ? "Approved" : "Pending"}</Text>
                 </View>
               }
               contentContainerStyle={{ paddingVertical: 4 }}
             />
             <Cell cellStyle="RightDetail" title="Date" detail={data.date} />
-            <Cell
-              cellStyle="Basic"
-              title="Actions"
-              cellAccessoryView={
-                <TouchableOpacity  onPress={()=> navigate("UpdateLogsForm",data)}>
+            {data.invoice_status == "2" ?
+              <Cell
+                cellStyle="Basic"
+                title="Actions"
+                cellAccessoryView={
+                  <TouchableOpacity onPress={() => navigate("UpdateLogsForm", data)}>
 
-                <View style={styles.editBox}>
-                  <AntDesign
-                    name="edit"
-                    size={20}
-                    color="darkblue"
-                    style={{ textAlign: "center" }}
-                  />
-                </View>
-                </TouchableOpacity>
-              }
-              contentContainerStyle={{ paddingVertical: 4 }}
-            />
+                    <View style={styles.editBox}>
+                      <AntDesign
+                        name="edit"
+                        size={20}
+                        color="darkblue"
+                        style={{ textAlign: "center" }}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                }
+                contentContainerStyle={{ paddingVertical: 4 }}
+              /> :
+              <Cell
+                cellStyle="Basic"
+                title="Download Invoice"
+      
+
+                cellAccessoryView={
+                  <TouchableOpacity onPress={() => handleFileDownload(data.invoice_path, data.date )}>
+
+                    <View style={styles.editBox}>
+                      <AntDesign
+                        name="download"
+                        size={20}
+                        color="darkblue"
+                        style={{ textAlign: "center" }}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                }
+                contentContainerStyle={{ paddingVertical: 4 }}
+              />
+            }
           </Section>
-        )):null}
+        )) : null}
       </TableView>
     </ScrollView>
   );
@@ -202,6 +242,12 @@ const styles = StyleSheet.create({
   },
   pendingBox: {
     backgroundColor: "#ffc107",
+    width: 80,
+    borderRadius: 10,
+    padding: 5,
+  },
+  pendingBoxGreen: {
+    backgroundColor: "green",
     width: 80,
     borderRadius: 10,
     padding: 5,

@@ -28,16 +28,16 @@ const UpdateLogsForm = ({route}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [formdata,setformdata]=React.useState({
     id:route.params.id,
-    collection:"",
-    missing_parcel:"",
-    parcel_delivered:"",
-    carry_forward:"",
+    collection:route.params.collection,
+    missing_parcel:route.params.missing_parcels,
+    parcel_delivered:route.params.parcel_delivered,
+    carry_forward:route.params.carry_forward,
     driver_id:route.params.driver_id,
     route_id:route.params.route_id,
     assign_id:route.params.assign_route_id,
-    rate:"",
+    rate:route.params.total_amount,
   })
-
+console.log(route)
   const _pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({});
     setImage(result.uri);
@@ -124,7 +124,7 @@ const UpdateLogsForm = ({route}) => {
         </View>
         <View style={styles.form_textInput_div}>
           <TextInput 
-            value={formdata.collection}
+            value={!formdata.collection ?route.params.collection:formdata.collection}
             onChangeText={(text)=>{
               setformdata({
                 ...formdata,
@@ -140,7 +140,7 @@ const UpdateLogsForm = ({route}) => {
         </View>
         <View style={styles.form_textInput_div}>
           <TextInput
-             value={formdata.missing_parcel}
+             value={!formdata.missing_parcel?route.params.missing_parcels:formdata.missing_parcel}
              onChangeText={(text)=>{
               setformdata({
                 ...formdata,
@@ -156,7 +156,7 @@ const UpdateLogsForm = ({route}) => {
         </View>
         <View style={styles.form_textInput_div}>
           <TextInput
-            value={formdata.parcel_delivered}
+            value={!formdata.parcel_delivered ?route.params.parcel_delivered:formdata.parcel_delivered}
             
           onChangeText={(text)=>{
             setformdata({
@@ -173,7 +173,7 @@ const UpdateLogsForm = ({route}) => {
         </View>
         <View style={styles.form_textInput_div}>
           <TextInput 
-          value={formdata.carry_forward}
+          value={!formdata.carry_forward ?route.params.carry_forward:formdata.carry_forward}
           onChangeText={(text)=>{
             setformdata({
               ...formdata,
@@ -189,7 +189,7 @@ const UpdateLogsForm = ({route}) => {
         </View>
         <View style={styles.form_textInput_div}>
           <TextInput 
-          value={formdata.rate}
+          value={!formdata.rate ?route.params.total_amount:formdata.rate}
           onChangeText={(text)=>{
             setformdata({
               ...formdata,
@@ -230,7 +230,10 @@ const UpdateLogsForm = ({route}) => {
         end={{ x: 1, y: 1 }}
         style={styles.buttonDiv}
       >
-          <Text onPress={uploadfun}  style={styles.button}>Upload</Text>
+      <TouchableOpacity  onPress={uploadfun} >
+
+          <Text style={styles.button}>Upload</Text>
+      </TouchableOpacity>
 
       </LinearGradient>
 

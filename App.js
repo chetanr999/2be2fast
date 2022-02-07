@@ -127,7 +127,8 @@ export default function App() {
   }
   return (
     <AuthContext.Provider value={authContext}>
-      {loginState.userToken !== null ? <DrawerNavigator /> : <StackNavigator />}
+      {/* {loginState.userToken !== null ? <DrawerNavigator /> : <StackNavigator />} */}
+      <DrawerNavigator />
     </AuthContext.Provider>
   );
 }
