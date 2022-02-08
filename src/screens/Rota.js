@@ -66,12 +66,12 @@ const Rota = () => {
   //     Action: "Delete",
   //   },
   // ]);
-  const [state,setstate]=React.useState(null);
+  const [state, setstate] = React.useState(null);
 
   useFocusEffect(
     React.useCallback(() => {
-      (async()=>{
-        try{
+      (async () => {
+        try {
           let bodyContent = new FormData();
           bodyContent.append("driver_id", 1);
           const response = await fetch("https://2be2fast.com/soft/fetch_leaves_data", {
@@ -79,20 +79,20 @@ const Rota = () => {
             body: bodyContent,
             headers: {},
           });
-          const temp=await response.json();
+          const temp = await response.json();
           setstate(temp.data)
         }
-        catch(e){
+        catch (e) {
           console.log(e)
         }
       })()
     }, [state])
   );
 
-  const deleterota=async(id)=>{
-    ToastAndroid.show("Deleting...",ToastAndroid.SHORT);
-    try{
-      console.log("id:",id)
+  const deleterota = async (id) => {
+    ToastAndroid.show("Deleting...", ToastAndroid.SHORT);
+    try {
+      console.log("id:", id)
       let bodyContent = new FormData();
       bodyContent.append("id", id);
       const response = await fetch("https://2be2fast.com/soft/delete_leave", {
@@ -100,13 +100,13 @@ const Rota = () => {
         body: bodyContent,
         headers: {},
       });
-      const temp=await response.json();
+      const temp = await response.json();
       console.log(temp)
-      ToastAndroid.show("Successfully Deleted",ToastAndroid.SHORT);
+      ToastAndroid.show("Successfully Deleted", ToastAndroid.SHORT);
 
     }
-    catch(e){
-      ToastAndroid.show("Error while deleting",ToastAndroid.SHORT);
+    catch (e) {
+      ToastAndroid.show("Error while deleting", ToastAndroid.SHORT);
       console.log(e)
     }
   }
@@ -114,10 +114,10 @@ const Rota = () => {
   return (
     <ScrollView contentContainerStyle={styles.stage}>
       <TableView appearance="light">
-        {state?state.map((data,i) => {
+        {state ? state.map((data, i) => {
           return (
             <Section>
-              <Cell cellStyle="RightDetail" title="No." detail={i+1} />
+              <Cell cellStyle="RightDetail" title="No." detail={i + 1} />
               <Cell cellStyle="RightDetail" title="Date" detail={data.date} />
 
               <Cell
@@ -129,18 +129,25 @@ const Rota = () => {
                 cellStyle="Basic"
                 title="Status"
                 cellAccessoryView={
-                  data.Status == "Approved" ? (
+                  data.Status == "1" ? (
                     <View style={styles.aprovedBox}>
                       <Text style={styles.disaaproveBox_text}>
-                        {data.Status}
+                        Approved
                       </Text>
                     </View>
                   ) : (
-                    <View style={styles.disaaproveBox}>
+
+                    data.Status == "3" ? <View style={styles.disaaproveBox}>
                       <Text style={styles.disaaproveBox_text}>
-                        {data.status}
+                        Disaaproved
+                      </Text>
+                    </View> : <View style={styles.disaaproveBox_1}>
+                      <Text style={styles.disaaproveBox_text}>
+                        Pending
                       </Text>
                     </View>
+
+
                   )
                 }
                 contentContainerStyle={{ paddingVertical: 4 }}
@@ -154,7 +161,7 @@ const Rota = () => {
                       name="delete"
                       size={20}
                       color="#dc3545"
-                      onPress={()=> Alert.alert(
+                      onPress={() => Alert.alert(
                         "Confirmation",
                         "Are you sure to delete this",
                         [
@@ -174,7 +181,7 @@ const Rota = () => {
               />
             </Section>
           );
-        }):null}
+        }) : null}
       </TableView>
     </ScrollView>
   );
@@ -191,11 +198,17 @@ const styles = StyleSheet.create({
     width: 100,
     borderRadius: 10,
     padding: 5,
-    borderWidth:1,
-    borderColor:"#dc3545"
+    borderWidth: 1,
+    borderColor: "#dc3545"
   },
   disaaproveBox: {
     backgroundColor: "#dc3545",
+    width: 100,
+    borderRadius: 10,
+    padding: 5,
+  },
+  disaaproveBox_1: {
+    backgroundColor: "#ffc107",
     width: 100,
     borderRadius: 10,
     padding: 5,

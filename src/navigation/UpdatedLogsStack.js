@@ -5,6 +5,7 @@ import "react-native-gesture-handler";
 
 import UpdatedLogs from "../screens/UpdatedLogs";
 import UpdateLogsForm from "../screens/UpdateLogsForm";
+import Images from "../screens/Image";
 
 const Stack = createStackNavigator();
 export default function App() {
@@ -18,6 +19,11 @@ export default function App() {
       <Stack.Screen
         name="UpdateLogsForm"
         component={UpdateLogsForm}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Images"
+        component={Images}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

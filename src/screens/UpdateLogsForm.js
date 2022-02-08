@@ -27,17 +27,17 @@ const CAPTURE_SIZE = Math.floor(windowHeight * 0.08);
 const UpdateLogsForm = ({route}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [formdata,setformdata]=React.useState({
-    id:route.params.id,
-    collection:route.params.collection,
-    missing_parcel:route.params.missing_parcels,
-    parcel_delivered:route.params.parcel_delivered,
-    carry_forward:route.params.carry_forward,
-    driver_id:route.params.driver_id,
-    route_id:route.params.route_id,
-    assign_id:route.params.assign_route_id,
-    rate:route.params.total_amount,
+    id:"",
+    collection:"",
+    missing_parcel:"",
+    parcel_delivered:"",
+    carry_forward:"",
+    driver_id:"",
+    route_id:"",
+    assign_id:"",
+    rate:"",
   })
-console.log(route)
+
   const _pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({});
     setImage(result.uri);
@@ -48,6 +48,24 @@ console.log(route)
   const [hasPermission, setHasPermission] = useState(null);
   const [isuploading,setisuploading]=React.useState(false);
   
+  useEffect(()=>{
+    console.log(route.params)
+    setformdata(
+      {
+        id:route.params.id,
+        collection:route.params.collection,
+        carry_forward:route.params.carry_forward,
+        missing_parcel:route.params.missing_parcels,
+        rate:route.params.total_amount,
+        parcel_delivered:route.params.parcel_delivered,
+        assign_id:route.params.assign_route_id,
+        route_id:route.params.route_id,
+        driver_id:route.params.driver_id
+      }
+    )
+    
+  },[])
+
   const uploadfun= async()=>{
     if(!formdata.collection.length||!formdata.missing_parcel.length||!formdata.parcel_delivered.length
       ||!formdata.carry_forward.length||!formdata.rate.length
@@ -68,7 +86,7 @@ console.log(route)
         bodyContent.append("parcel_delivered",formdata.parcel_delivered);
         bodyContent.append("carry_forward",formdata.carry_forward);
         bodyContent.append("upload_img",{
-          uri:image,
+          uri:image?image:"https://2be2fast.com/soft/logs_upload"+route.params.image,
           type:"image/jpg",
           name:"image.jpg"
         });
@@ -124,7 +142,7 @@ console.log(route)
         </View>
         <View style={styles.form_textInput_div}>
           <TextInput 
-            value={!formdata.collection ?route.params.collection:formdata.collection}
+            value={formdata.collection}
             onChangeText={(text)=>{
               setformdata({
                 ...formdata,
@@ -140,7 +158,7 @@ console.log(route)
         </View>
         <View style={styles.form_textInput_div}>
           <TextInput
-             value={!formdata.missing_parcel?route.params.missing_parcels:formdata.missing_parcel}
+             value={formdata.missing_parcel}
              onChangeText={(text)=>{
               setformdata({
                 ...formdata,
@@ -156,7 +174,7 @@ console.log(route)
         </View>
         <View style={styles.form_textInput_div}>
           <TextInput
-            value={!formdata.parcel_delivered ?route.params.parcel_delivered:formdata.parcel_delivered}
+            value={formdata.parcel_delivered}
             
           onChangeText={(text)=>{
             setformdata({
@@ -173,7 +191,7 @@ console.log(route)
         </View>
         <View style={styles.form_textInput_div}>
           <TextInput 
-          value={!formdata.carry_forward ?route.params.carry_forward:formdata.carry_forward}
+          value={formdata.carry_forward}
           onChangeText={(text)=>{
             setformdata({
               ...formdata,
@@ -189,7 +207,7 @@ console.log(route)
         </View>
         <View style={styles.form_textInput_div}>
           <TextInput 
-          value={!formdata.rate ?route.params.total_amount:formdata.rate}
+          value={formdata.rate}
           onChangeText={(text)=>{
             setformdata({
               ...formdata,
@@ -230,10 +248,7 @@ console.log(route)
         end={{ x: 1, y: 1 }}
         style={styles.buttonDiv}
       >
-      <TouchableOpacity  onPress={uploadfun} >
-
-          <Text style={styles.button}>Upload</Text>
-      </TouchableOpacity>
+          <Text onPress={uploadfun}  style={styles.button}>Upload</Text>
 
       </LinearGradient>
 

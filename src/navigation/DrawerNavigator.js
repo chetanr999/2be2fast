@@ -26,6 +26,7 @@ import Messages from "../screens/Messages";
 import Rota from "../screens/Rota";
 import UpdatedLogsStack from "./UpdatedLogsStack";
 import DailyLogsStack from "./DailyLogsStack";
+import MessageStack from "./MessageStack"
 
 const color_main = "#6301ed" //f4511e
 
@@ -155,7 +156,7 @@ export default function App({ navigation }) {
         />
         <Drawer.Screen
           name="Messages"
-          component={Messages}
+          component={MessageStack}
           options={{
             headerStyle: {
               backgroundColor: color_main,

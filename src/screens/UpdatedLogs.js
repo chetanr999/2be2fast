@@ -144,10 +144,10 @@ try {
               cellStyle="Basic"
               title="Image"
               cellAccessoryView={
-                <View style={{}}>
+                <TouchableOpacity onPress={() => navigate("Images",{data:"https://2be2fast.com/soft/" + data.image})}>
                   <Image source={{ uri: 'https://2be2fast.com/soft/' + data.image }}
                     style={{ width: 40, height: 40 }} />
-                </View>
+                </TouchableOpacity>
               }
               contentContainerStyle={{ paddingVertical: 4 }}
             />
